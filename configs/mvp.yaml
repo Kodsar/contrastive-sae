@@ -1,11 +1,12 @@
 seed: 42
 
 paths:
-  activation_dir: data/activations/mvp
-  checkpoint_dir: checkpoints/mvp
+  activation_dir: /ehsan-rw/kosar/dataset/activations/mvp
+  checkpoint_dir: /ehsan-rw/kosar/checkpoints/mvp
 
 data:
   source: huggingface
+  cache_dir: /ehsan-rw/kosar/dataset/huggingface
   dataset_name: sentence-transformers/quora-duplicates
   dataset_config: pair
   split: train
@@ -48,4 +49,3 @@ training:
   validation_batches: 20
   save_every: 1000
   mixed_precision: bf16
-

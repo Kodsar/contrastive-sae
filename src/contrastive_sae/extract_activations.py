@@ -80,7 +80,19 @@ def load_text_pairs(
         dataset_name = data_config["dataset_name"]
         dataset_config = data_config.get("dataset_config")
         split = data_config.get("split", "train")
-        dataset = load_dataset(dataset_name, dataset_config, split=split)
+        cache_dir_value = data_config.get("cache_dir")
+        cache_dir: str | None = None
+        if cache_dir_value:
+            cache_path = Path(cache_dir_value).expanduser()
+            cache_path.mkdir(parents=True, exist_ok=True)
+            cache_dir = str(cache_path)
+
+        dataset = load_dataset(
+            dataset_name,
+            dataset_config,
+            split=split,
+            cache_dir=cache_dir,
+        )
         if data_config.get("shuffle", True):
             dataset = dataset.shuffle(seed=seed)
 
@@ -364,6 +376,11 @@ def main() -> None:
             raise ValueError("data.jsonl_path is required for a JSONL source")
         data_config = dict(data_config)
         data_config["jsonl_path"] = str(resolve_project_path(config, jsonl_value))
+    elif data_config.get("cache_dir"):
+        data_config = dict(data_config)
+        data_config["cache_dir"] = str(
+            resolve_project_path(config, data_config["cache_dir"])
+        )
 
     pairs = load_text_pairs(data_config, seed=seed, max_pairs=max_pairs)
     validation_fraction = float(data_config["validation_fraction"])
@@ -433,6 +450,7 @@ def main() -> None:
         "splits": {"train": train_info, "validation": validation_info},
         "source": {
             "type": data_config["source"],
+            "cache_dir": data_config.get("cache_dir"),
             "dataset_name": data_config.get("dataset_name"),
             "dataset_config": data_config.get("dataset_config"),
             "split": data_config.get("split"),

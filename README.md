@@ -76,6 +76,21 @@ It exposes `anchor` and `positive` columns and contains about 149k positive
 pairs. Dataset licensing and attribution remain the responsibility of the
 researcher.
 
+The MVP configuration downloads and caches the Hugging Face dataset
+automatically. No local dataset file is required. All dataset artifacts are
+kept below the configured shared directory:
+
+```text
+/ehsan-rw/kosar/
+├── dataset/
+│   ├── huggingface/      # Raw/downloaded Hugging Face dataset cache
+│   └── activations/mvp/  # Extracted paired Gemma activations
+└── checkpoints/mvp/      # Trained SAE checkpoints and metrics
+```
+
+The extractor creates these subdirectories automatically. The user running the
+command must have write permission on `/ehsan-rw/kosar/dataset`.
+
 ```bash
 csae-extract --config configs/mvp.yaml
 ```
@@ -97,10 +112,10 @@ data:
 ```
 
 The extractor writes memory-mapped NumPy arrays plus training-set
-normalization statistics:
+normalization statistics to the configured absolute activation path:
 
 ```text
-data/activations/mvp/
+/ehsan-rw/kosar/dataset/activations/mvp/
 ├── train_x1.npy
 ├── train_x2.npy
 ├── validation_x1.npy
@@ -125,7 +140,8 @@ csae-train --config configs/mvp.yaml --steps 50 --num-workers 0
 Pass `--overwrite` to either command when intentionally replacing an existing
 activation cache or training run.
 
-Training outputs are written to `checkpoints/mvp/`:
+Training outputs are written to the configured shared checkpoint directory,
+`/ehsan-rw/kosar/checkpoints/mvp/`:
 
 ```text
 best.pt
@@ -139,7 +155,7 @@ metrics.jsonl
 ```bash
 csae-evaluate \
   --config configs/mvp.yaml \
-  --checkpoint checkpoints/mvp/best.pt
+  --checkpoint /ehsan-rw/kosar/checkpoints/mvp/best.pt
 ```
 
 Evaluation reports:
