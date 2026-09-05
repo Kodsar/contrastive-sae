@@ -7,5 +7,4 @@ csae-extract --config "$CONFIG_PATH"
 csae-train --config "$CONFIG_PATH"
 csae-evaluate \
   --config "$CONFIG_PATH" \
-  --checkpoint checkpoints/mvp/best.pt
-
+  --checkpoint /ehsan-rw/kosar/checkpoints/mvp/best.pt
