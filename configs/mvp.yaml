@@ -1,0 +1,51 @@
+seed: 42
+
+paths:
+  activation_dir: data/activations/mvp
+  checkpoint_dir: checkpoints/mvp
+
+data:
+  source: huggingface
+  dataset_name: sentence-transformers/quora-duplicates
+  dataset_config: pair
+  split: train
+  text1_column: anchor
+  text2_column: positive
+  max_pairs: 100000
+  validation_fraction: 0.05
+  shuffle: true
+
+activation:
+  model_name: google/gemma-2-2b
+  layer_index: 12
+  max_length: 128
+  pooling: masked_mean
+  extraction_batch_size: 16
+  storage_dtype: float16
+  device: auto
+
+sae:
+  input_dim: 2304
+  high_features: 6144
+  low_features: 2048
+  high_topk: 24
+  low_topk: 8
+
+training:
+  batch_size: 512
+  num_workers: 4
+  steps: 10000
+  learning_rate: 0.0003
+  min_learning_rate_ratio: 0.1
+  warmup_steps: 500
+  contrastive_start_step: 500
+  contrastive_ramp_steps: 1000
+  contrastive_weight: 0.1
+  temperature: 0.07
+  gradient_clip_norm: 1.0
+  log_every: 50
+  validate_every: 500
+  validation_batches: 20
+  save_every: 1000
+  mixed_precision: bf16
+
